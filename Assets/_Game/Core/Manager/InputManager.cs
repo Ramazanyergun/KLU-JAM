@@ -15,6 +15,10 @@ public class InputManager : MonoBehaviour
     [Header("Jump Input")]
     public bool isJumped;
 
+    [Header("Combat Input")]
+    public bool isAttacking;
+    public bool isDefensing;
+
 
     void Awake()
     {
@@ -44,6 +48,12 @@ public class InputManager : MonoBehaviour
         inputActions.Locomotion.Jump.canceled += i => isJumped = false;
 
 
+        inputActions.Combat.Attack.started += i => isAttacking = true;
+        inputActions.Combat.Attack.canceled += i => isAttacking = false;
+
+
+        inputActions.Combat.Defense.started += i => isDefensing = true;
+        inputActions.Combat.Defense.canceled += i => isDefensing = false;
 
         inputActions.Enable();
     }
