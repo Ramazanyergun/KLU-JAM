@@ -23,9 +23,12 @@ public class PlayerCombat : MonoBehaviour
 
     public bool IsDefensing => m_isCurrentlyDefending;
 
+
+     SoundManager soundManager;
     private void Awake()
     {
         m_playerMovement = GetComponent<PlayerMovement>();
+        soundManager=GameObject.FindGameObjectWithTag("Sound").GetComponent<SoundManager>();
     }
 
     public void HandleCombat()
@@ -39,9 +42,10 @@ public class PlayerCombat : MonoBehaviour
         if (InputManager.Instance.isAttacking && Time.time >= m_nextAttackTime)
         {
             if (m_isCurrentlyDefending) return;
-
+            soundManager.PlaySFX(soundManager.attack);
             ExecuteAttack();
             m_nextAttackTime = Time.time + m_attackCooldown;
+
         }
     }
 
@@ -53,6 +57,10 @@ public class PlayerCombat : MonoBehaviour
             m_attackPoint.position,
             m_attackRange,
             m_enemyLayer);
+        if (hitEnemies.Length > 0)
+        {
+            soundManager.PlaySFX(soundManager.takedamage); // SoundManager'a hitImpact eklediğini varsayıyorum
+        }
 
         foreach (Collider2D enemy in hitEnemies)
         {
@@ -63,12 +71,15 @@ public class PlayerCombat : MonoBehaviour
     private void HandleDefense()
     {
         bool isInputDefending = InputManager.Instance.isDefensing;
-
-        // Enerji varsa defend yap�labilir
+        bool wasDefending = m_isCurrentlyDefending;
+        // Enerji varsa defend yap�labilir
         if (isInputDefending && m_playerMovement.CurrentEnergy > 0)
         {
             m_isCurrentlyDefending = true;
-
+            if (!wasDefending)
+        {
+            soundManager.PlaySFX(soundManager.shield); 
+        }
             // Enerji azalt
             m_playerMovement.UseEnergy(m_defenseCost * Time.deltaTime);
         }

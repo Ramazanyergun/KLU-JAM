@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Main menu.unity
     guid: 1cd065aff51cc3149867eadc8e31ec88
   - enabled: 1
-    path: Assets/Scenes/SampleSceneCopy.unity
-    guid: a2d8022d459b2f944ab7377971699426
+    path: Assets/Scenes/Level2.unity
+    guid: 18a80a935c89b2b45aa1ba1581269de5
   - enabled: 1
     path: Assets/Scenes/Health bar.unity
     guid: 83919a61c97642e4c8a29eb9a16540cf
