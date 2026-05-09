@@ -53,6 +53,15 @@ public class EnemyCombat : MonoBehaviour
     private void ExecuteAttack(bool isRanged)
     {
         OnAttack?.Invoke();
+        if (SoundManager.Instance != null)
+    {
+        if (gameObject.CompareTag("Cadi")) 
+            SoundManager.Instance.PlaySFX(SoundManager.Instance.bam); // Cadı bam sesi
+        else if (gameObject.CompareTag("Goblin"))
+            SoundManager.Instance.PlaySFX(SoundManager.Instance.attack); // Goblin attack sesi
+        else if (gameObject.CompareTag("Fare"))
+            SoundManager.Instance.PlaySFX(SoundManager.Instance.bocukattack); // Fare attack sesi
+    }
 
         //if (isRanged)
         //    ExecuteRangedAttack();
@@ -90,6 +99,8 @@ public class EnemyCombat : MonoBehaviour
     private void ExecuteRangedAttack()
     {
         if (m_projectilePrefab == null || m_playerTransform == null) return;
+        if (gameObject.CompareTag("Cadi") && SoundManager.Instance != null)
+        SoundManager.Instance.PlaySFX(SoundManager.Instance.fuf); // Atış sesi
 
         GameObject instance = Instantiate(m_projectilePrefab, m_attackTransform.position, Quaternion.identity);
 

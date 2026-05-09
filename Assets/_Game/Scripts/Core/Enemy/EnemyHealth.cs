@@ -7,13 +7,14 @@ public class EnemyHealth : Health
     
     [Header("UI Reference")]
     public Healthbar healthbar;
-
+    SoundManager soundManager;
     void Awake()
     {
          if (healthbar == null)
         {
             healthbar = GetComponentInChildren<Healthbar>();
         }
+
     }
 
     void Start()
@@ -30,7 +31,8 @@ public class EnemyHealth : Health
     public override void TakeDamage(float damage)
     {
         base.TakeDamage(damage);
-
+        if (SoundManager.Instance != null)
+        SoundManager.Instance.PlaySFX(SoundManager.Instance.takedamage);
         if (healthbar != null)
         {
             healthbar.SetHealth(m_currentHealth);
@@ -47,7 +49,8 @@ public class EnemyHealth : Health
         if (isDead) return;
 
         isDead = true;
-
+        if (SoundManager.Instance != null)
+        SoundManager.Instance.PlayDeathSound(gameObject.tag);
         // Tüm sistemleri kapat
         EnemyMovement movement = GetComponent<EnemyMovement>();
         EnemyCombat combat = GetComponent<EnemyCombat>();
