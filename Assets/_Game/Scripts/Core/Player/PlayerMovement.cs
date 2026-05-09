@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float m_energyRegenRate = 10f;
     [SerializeField] private float m_sprintEnergyCost = 20f;
 
+    public float CurrentEnergy => m_currentEnergyValue;
     [Header("Jump Settings")]
     [SerializeField] private float m_jumpForce = 10f;
 
@@ -85,7 +86,11 @@ public class PlayerMovement : MonoBehaviour
             OnJump?.Invoke();
         }
     }
-
+    public void UseEnergy(float amount)
+    {
+        m_currentEnergyValue -= amount;
+        m_currentEnergyValue = Mathf.Clamp(m_currentEnergyValue, 0, m_maxEnergyValue);
+    }
     private void HandleEnergyRegen()
     {
         bool isActionPerforming = InputManager.Instance.isSprinting && Mathf.Abs(InputManager.Instance.horizontalInput) > 0.1f;

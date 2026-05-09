@@ -8,6 +8,8 @@ public class EnemyCombat : MonoBehaviour
     [SerializeField] private bool m_isRanged;
     [SerializeField] private float m_damage;
     [SerializeField] private float m_attackCooldown;
+
+    [SerializeField] private Transform m_targetPoint;
     private float m_lastAttackTime;
 
     [Header("Melee Settings")]
@@ -52,8 +54,8 @@ public class EnemyCombat : MonoBehaviour
     {
         OnAttack?.Invoke();
 
-        if (isRanged)
-            ExecuteRangedAttack();
+        //if (isRanged)
+        //    ExecuteRangedAttack();
     }
 
     public void AnimationTriggerStep()
@@ -62,6 +64,9 @@ public class EnemyCombat : MonoBehaviour
         {
             ExecuteMeleeAttack();
         }
+        else { 
+            ExecuteRangedAttack();
+        }
     }
 
     private void ExecuteMeleeAttack()
@@ -69,8 +74,16 @@ public class EnemyCombat : MonoBehaviour
         Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(m_attackTransform.position, m_attackRange, m_attackLayer);
         foreach (Collider2D player in hitPlayer)
         {
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>(); 
+            PlayerCombat playerCombat = player.GetComponent<PlayerCombat>();
 
-            player.GetComponent<PlayerHealth>()?.TakeDamage(m_damage);
+            if (playerCombat != null && playerCombat.IsDefensing)
+            {
+                Debug.Log("is defensing cant damage");
+                return;  
+            }
+
+            playerHealth?.TakeDamage(m_damage);
         }
     }
 
@@ -81,17 +94,11 @@ public class EnemyCombat : MonoBehaviour
         GameObject instance = Instantiate(m_projectilePrefab, m_attackTransform.position, Quaternion.identity);
 
         // Mermiye yön ver (Oyuncuya doğru)
-        Vector2 direction = (m_playerTransform.position - m_attackTransform.position).normalized;
-
+        Vector2 direction = (m_targetPoint.position - m_attackTransform.position).normalized;
         // Merminin kendi scripti varsa oraya veriyi aktarabilirsin
-        // Örn: instance.GetComponent<Projectile>().Setup(direction, m_projectileSpeed, m_damage);
+        instance.GetComponent<Projectile>().Setup(direction, m_projectileSpeed, m_damage);
 
-        // Alternatif: Direkt Rigidbody2D ile fırlat (Mermide Rigidbody2D olmalı)
-        Rigidbody2D rb = instance.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            rb.linearVelocity = direction * m_projectileSpeed;
-        }
+   
     }
 
     private void OnDrawGizmosSelected()

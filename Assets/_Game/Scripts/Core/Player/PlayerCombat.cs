@@ -12,12 +12,21 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float m_damage;
     [SerializeField] private Transform m_attackPoint;
     [SerializeField] private LayerMask m_enemyLayer;
-    [Header("Defense Settings")]
 
-    private bool m_isDefensing;
-    public bool IsDefensing => m_isDefensing;
+    [Header("Defense Settings")]
+    [SerializeField] private float m_defenseCost = 15f;
+
     private float m_nextAttackTime;
     private bool m_isCurrentlyDefending;
+
+    private PlayerMovement m_playerMovement;
+
+    public bool IsDefensing => m_isCurrentlyDefending;
+
+    private void Awake()
+    {
+        m_playerMovement = GetComponent<PlayerMovement>();
+    }
 
     public void HandleCombat()
     {
@@ -39,7 +48,12 @@ public class PlayerCombat : MonoBehaviour
     private void ExecuteAttack()
     {
         OnAttack?.Invoke();
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(m_attackPoint.position, m_attackRange, m_enemyLayer);
+
+        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(
+            m_attackPoint.position,
+            m_attackRange,
+            m_enemyLayer);
+
         foreach (Collider2D enemy in hitEnemies)
         {
             enemy.GetComponent<EnemyHealth>()?.TakeDamage(m_damage);
@@ -50,11 +64,20 @@ public class PlayerCombat : MonoBehaviour
     {
         bool isInputDefending = InputManager.Instance.isDefensing;
 
-        if (isInputDefending != m_isCurrentlyDefending)
+        // Enerji varsa defend yapýlabilir
+        if (isInputDefending && m_playerMovement.CurrentEnergy > 0)
         {
-            m_isCurrentlyDefending = isInputDefending;
-            OnDefenseStatusChanged?.Invoke(m_isCurrentlyDefending);
+            m_isCurrentlyDefending = true;
+
+            // Enerji azalt
+            m_playerMovement.UseEnergy(m_defenseCost * Time.deltaTime);
         }
+        else
+        {
+            m_isCurrentlyDefending = false;
+        }
+
+        OnDefenseStatusChanged?.Invoke(m_isCurrentlyDefending);
     }
 
     private void OnDrawGizmosSelected()

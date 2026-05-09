@@ -10,8 +10,7 @@ public class EnemyHealth : Health
 
     void Awake()
     {
-        // Eğer Inspector'dan el ile atanmadıysa otomatik bulmaya çalış
-        if (healthbar == null)
+         if (healthbar == null)
         {
             healthbar = GetComponentInChildren<Healthbar>();
         }
@@ -19,8 +18,7 @@ public class EnemyHealth : Health
 
     void Start()
     {
-        // m_maxHealth ve m_currentHealth değişkenlerinin 
-        // ana Health sınıfında 'protected' olduğundan emin olun.
+       
         m_currentHealth = m_maxHealth;
 
         if (healthbar != null)
@@ -31,7 +29,6 @@ public class EnemyHealth : Health
 
     public override void TakeDamage(float damage)
     {
-        // Base class içindeki can düşürme ve event fırlatma mantığını çalıştırır
         base.TakeDamage(damage);
 
         if (healthbar != null)
@@ -48,20 +45,35 @@ public class EnemyHealth : Health
     private void Die()
     {
         if (isDead) return;
+
         isDead = true;
 
-        // Ölüm olayını fırlat (Örn: Puan kazanma veya efektler için)
+        // Tüm sistemleri kapat
+        EnemyMovement movement = GetComponent<EnemyMovement>();
+        EnemyCombat combat = GetComponent<EnemyCombat>();
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        Collider2D col = GetComponent<Collider2D>();
+
+        if (movement != null)
+            movement.enabled = false;
+
+        if (combat != null)
+            combat.enabled = false;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.gravityScale = 0;
+        }
+        if (col != null)
+            col.enabled = false;
+
+        // Ölüm eventi
         OnEnemyDeath?.Invoke();
 
-        // Fiziksel etkileşimi kesmek için collider'ı kapat
-        if (TryGetComponent<Collider2D>(out var col)) 
-        {
-            col.enabled = false;
-        }
-
-        // Düşmanı 4 saniye sonra yok et
+        // Animasyon bitince destroy et
         Destroy(gameObject, 4f);
-        
-        Debug.Log($"{gameObject.name} yok edildi.");
+
+        Debug.Log($"{gameObject.name} öldü.");
     }
 }
