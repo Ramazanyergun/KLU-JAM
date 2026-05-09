@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public event Action<int> OnMoveStateChanged;
     public event Action OnJump;
     public event Action<float, bool> OnAirUpdate;
-
+    public event Action<float, float> OnEnergyChanged;
     [Header("Movement Settings")]
     [SerializeField] private float m_movementSpeed = 5f;
     [SerializeField] private float m_sprintSpeed = 8f;
@@ -58,8 +58,13 @@ public class PlayerMovement : MonoBehaviour
 
         float targetSpeed = canSprint ? m_sprintSpeed : m_movementSpeed;
 
-        if (canSprint) m_currentEnergyValue -= m_sprintEnergyCost * Time.deltaTime;
+        if (canSprint)
+        {
+            m_currentEnergyValue -= m_sprintEnergyCost * Time.deltaTime;
+            OnEnergyChanged?.Invoke(m_currentEnergyValue, m_maxEnergyValue);
+        }
         m_currentEnergyValue = Mathf.Max(m_currentEnergyValue, 0);
+
 
         Vector2 targetVelocity = new Vector2(horizontalInput * targetSpeed, m_playerRB.linearVelocity.y);
         m_playerRB.linearVelocity = Vector2.SmoothDamp(m_playerRB.linearVelocity, targetVelocity, ref m_velocityReference, m_acceleration);
@@ -88,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
         {
             m_currentEnergyValue += m_energyRegenRate * Time.deltaTime;
             m_currentEnergyValue = Mathf.Min(m_currentEnergyValue, m_maxEnergyValue);
+            OnEnergyChanged?.Invoke(m_currentEnergyValue, m_maxEnergyValue); 
         }
     }
 }

@@ -1542,6 +1542,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ab4bb2227d2acc408b2d2b3d4668c44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
+  m_isRanged: 0
+  m_damage: 0
+  m_attackCooldown: 0
+  m_attackRange: 0
+  m_attackTransform: {fileID: 0}
+  m_attackLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  m_projectilePrefab: {fileID: 0}
+  m_projectileSpeed: 10
 --- !u!114 &1627577343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1554,6 +1564,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8018a6f03889a7a44b2f340ef8c92356, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  m_moveSpeed: 3
+  m_chaseSpeed: 5
+  m_stopDistance: 1.5
+  m_detectionRange: 8
+  m_playerLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  m_wayPoints: []
+  m_waitAtWaypoint: 1.5
 --- !u!1 &1738646543
 GameObject:
   m_ObjectHideFlags: 0
