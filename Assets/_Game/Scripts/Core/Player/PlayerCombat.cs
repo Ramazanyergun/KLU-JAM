@@ -9,6 +9,7 @@ public class PlayerCombat : MonoBehaviour
     [Header("Attack Settings")]
     [SerializeField] private float m_attackCooldown = 0.5f;
     [SerializeField] private float m_attackRange = 1.2f;
+    [SerializeField] private float m_damage;
     [SerializeField] private Transform m_attackPoint;
     [SerializeField] private LayerMask m_enemyLayer;
 
@@ -23,7 +24,6 @@ public class PlayerCombat : MonoBehaviour
 
     private void HandleAttack()
     {
-        // InputManager'dan gelen isAttacking bool'unu kontrol et
         if (InputManager.Instance.isAttacking && Time.time >= m_nextAttackTime)
         {
             if (m_isCurrentlyDefending) return;
@@ -36,11 +36,10 @@ public class PlayerCombat : MonoBehaviour
     private void ExecuteAttack()
     {
         OnAttack?.Invoke();
-        // Fiziksel darbe kontrolü
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(m_attackPoint.position, m_attackRange, m_enemyLayer);
         foreach (Collider2D enemy in hitEnemies)
         {
-            // enemy.GetComponent<IDamageable>()?.TakeDamage(10);
+            enemy.GetComponent<EnemyHealth>()?.TakeDamage(m_damage);
         }
     }
 
