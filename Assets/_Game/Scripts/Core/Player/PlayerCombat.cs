@@ -12,7 +12,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float m_damage;
     [SerializeField] private Transform m_attackPoint;
     [SerializeField] private LayerMask m_enemyLayer;
+    [Header("Defense Settings")]
 
+    private bool m_isDefensing;
+    public bool IsDefensing => m_isDefensing;
     private float m_nextAttackTime;
     private bool m_isCurrentlyDefending;
 
