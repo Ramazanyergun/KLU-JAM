@@ -1,25 +1,29 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class EnemyHealth : Health
 {
     public event Action OnEnemyDeath;
-    
+
     [Header("UI Reference")]
     public Healthbar healthbar;
     SoundManager soundManager;
+    private EnemyPool m_pool;
+
     void Awake()
     {
-         if (healthbar == null)
+        if (healthbar == null)
         {
             healthbar = GetComponentInChildren<Healthbar>();
         }
 
     }
 
+
     void Start()
     {
-       
+
         m_currentHealth = m_maxHealth;
 
         if (healthbar != null)
@@ -32,7 +36,7 @@ public class EnemyHealth : Health
     {
         base.TakeDamage(damage);
         if (SoundManager.Instance != null)
-        SoundManager.Instance.PlaySFX(SoundManager.Instance.takedamage);
+            SoundManager.Instance.PlaySFX(SoundManager.Instance.takedamage);
         if (healthbar != null)
         {
             healthbar.SetHealth(m_currentHealth);
@@ -50,7 +54,7 @@ public class EnemyHealth : Health
 
         isDead = true;
         if (SoundManager.Instance != null)
-        SoundManager.Instance.PlayDeathSound(gameObject.tag);
+            SoundManager.Instance.PlayDeathSound(gameObject.tag);
         // Tüm sistemleri kapat
         EnemyMovement movement = GetComponent<EnemyMovement>();
         EnemyCombat combat = GetComponent<EnemyCombat>();
@@ -75,8 +79,22 @@ public class EnemyHealth : Health
         OnEnemyDeath?.Invoke();
 
         // Animasyon bitince destroy et
-        Destroy(gameObject, 4f);
+        StartCoroutine(ReturnToPool());
 
         Debug.Log($"{gameObject.name} öldü.");
     }
+    public void SetPool(EnemyPool pool)
+    {
+        m_pool = pool;
+    }
+
+    private IEnumerator ReturnToPool()
+    {
+        yield return new WaitForSeconds(4f);
+
+        m_pool.ReturnEnemy(gameObject);
+
+
+    }
+
 }

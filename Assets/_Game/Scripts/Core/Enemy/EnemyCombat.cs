@@ -25,6 +25,7 @@ public class EnemyCombat : MonoBehaviour
 
     void Start()
     {
+        m_targetPoint = GameObject.FindGameObjectWithTag("TargetPoint").transform;
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) m_playerTransform = player.transform;
     }
@@ -54,14 +55,14 @@ public class EnemyCombat : MonoBehaviour
     {
         OnAttack?.Invoke();
         if (SoundManager.Instance != null)
-    {
-        if (gameObject.CompareTag("Cadi")) 
-            SoundManager.Instance.PlaySFX(SoundManager.Instance.bam); // Cadı bam sesi
-        else if (gameObject.CompareTag("Goblin"))
-            SoundManager.Instance.PlaySFX(SoundManager.Instance.attack); // Goblin attack sesi
-        else if (gameObject.CompareTag("Fare"))
-            SoundManager.Instance.PlaySFX(SoundManager.Instance.bocukattack); // Fare attack sesi
-    }
+        {
+            if (gameObject.CompareTag("Cadi"))
+                SoundManager.Instance.PlaySFX(SoundManager.Instance.bam); // Cadı bam sesi
+            else if (gameObject.CompareTag("Goblin"))
+                SoundManager.Instance.PlaySFX(SoundManager.Instance.attack); // Goblin attack sesi
+            else if (gameObject.CompareTag("Fare"))
+                SoundManager.Instance.PlaySFX(SoundManager.Instance.bocukattack); // Fare attack sesi
+        }
 
         //if (isRanged)
         //    ExecuteRangedAttack();
@@ -73,7 +74,8 @@ public class EnemyCombat : MonoBehaviour
         {
             ExecuteMeleeAttack();
         }
-        else { 
+        else
+        {
             ExecuteRangedAttack();
         }
     }
@@ -83,24 +85,29 @@ public class EnemyCombat : MonoBehaviour
         Collider2D[] hitPlayer = Physics2D.OverlapCircleAll(m_attackTransform.position, m_attackRange, m_attackLayer);
         foreach (Collider2D player in hitPlayer)
         {
-            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>(); 
+            PlayerHealth playerHealth = player.GetComponent<PlayerHealth>();
             PlayerCombat playerCombat = player.GetComponent<PlayerCombat>();
+            PlayerMovement movement = player.GetComponent<PlayerMovement>();
 
             if (playerCombat != null && playerCombat.IsDefensing)
             {
                 Debug.Log("is defensing cant damage");
-                return;  
+                return;
             }
 
             playerHealth?.TakeDamage(m_damage);
+            movement?.CheckDeath();
+
         }
+
+
     }
 
     private void ExecuteRangedAttack()
     {
         if (m_projectilePrefab == null || m_playerTransform == null) return;
         if (gameObject.CompareTag("Cadi") && SoundManager.Instance != null)
-        SoundManager.Instance.PlaySFX(SoundManager.Instance.fuf); // Atış sesi
+            SoundManager.Instance.PlaySFX(SoundManager.Instance.fuf); // Atış sesi
 
         GameObject instance = Instantiate(m_projectilePrefab, m_attackTransform.position, Quaternion.identity);
 
@@ -109,7 +116,12 @@ public class EnemyCombat : MonoBehaviour
         // Merminin kendi scripti varsa oraya veriyi aktarabilirsin
         instance.GetComponent<Projectile>().Setup(direction, m_projectileSpeed, m_damage);
 
-   
+
+
+
+
+
+
     }
 
     private void OnDrawGizmosSelected()

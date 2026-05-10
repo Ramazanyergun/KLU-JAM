@@ -24,11 +24,11 @@ public class PlayerCombat : MonoBehaviour
     public bool IsDefensing => m_isCurrentlyDefending;
 
 
-     SoundManager soundManager;
+    SoundManager soundManager;
     private void Awake()
     {
         m_playerMovement = GetComponent<PlayerMovement>();
-        soundManager=GameObject.FindGameObjectWithTag("Sound").GetComponent<SoundManager>();
+        soundManager = GameObject.FindGameObjectWithTag("Sound").GetComponent<SoundManager>();
     }
 
     public void HandleCombat()
@@ -75,11 +75,17 @@ public class PlayerCombat : MonoBehaviour
         // Enerji varsa defend yap�labilir
         if (isInputDefending && m_playerMovement.CurrentEnergy > 0)
         {
-            m_isCurrentlyDefending = true;
+
+            bool canDefend =
+                m_playerMovement.ConsumeDefense(m_defenseCost * Time.deltaTime);
+
+            m_isCurrentlyDefending = canDefend;
+
+
             if (!wasDefending)
-        {
-            soundManager.PlaySFX(soundManager.shield); 
-        }
+            {
+                soundManager.PlaySFX(soundManager.shield);
+            }
             // Enerji azalt
             m_playerMovement.UseEnergy(m_defenseCost * Time.deltaTime);
         }
@@ -89,6 +95,7 @@ public class PlayerCombat : MonoBehaviour
         }
 
         OnDefenseStatusChanged?.Invoke(m_isCurrentlyDefending);
+
     }
 
     private void OnDrawGizmosSelected()

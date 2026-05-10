@@ -26,30 +26,24 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
+        if (!collision.CompareTag("Player")) return;
+
+        PlayerMovement movement =
+            collision.GetComponentInParent<PlayerMovement>();
+
+        PlayerCombat combat =
+            collision.GetComponentInParent<PlayerCombat>();
+
+        //movement.SetSwapHealthAndEnergy(true);
+        if (combat != null && combat.IsDefensing)
         {
-            PlayerHealth playerHealth =
-                collision.GetComponent<PlayerHealth>();
-
-            PlayerCombat playerCombat =
-                collision.GetComponent<PlayerCombat>();
-
-            // Savunmada deðilse hasar ver
-            if (playerHealth != null)
-            {
-                if (playerCombat == null || !playerCombat.IsDefensing)
-                {
-                    playerHealth.TakeDamage(m_damage);
-                }
-                else
-                {
-                    Debug.Log("Blocked!");
-                }
-            }
-
-            // HER DURUMDA efekt oynasýn
             Explode();
+            return;
         }
+
+        movement?.TakeResourceDamage(m_damage);
+
+        Explode();
     }
 
     private void Explode()

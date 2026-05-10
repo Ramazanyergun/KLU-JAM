@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerHealth : Health
 {
+    public event Action<float> OnHealthIncreased;
     public event Action OnPlayerDeath;
     public Healthbar healthbar;
 
@@ -10,11 +11,9 @@ public class PlayerHealth : Health
 
     void Awake()
     {
-        soundManager=GameObject.FindGameObjectWithTag("Sound").GetComponent<SoundManager>();
-        if (healthbar == null)
-        {
-            healthbar = GetComponentInChildren<Healthbar>();
-        }
+        healthbar = GameObject.FindFirstObjectByType<Healthbar>();
+        soundManager = GameObject.FindGameObjectWithTag("Sound").GetComponent<SoundManager>();
+
     }
     void Start()
     {
@@ -52,7 +51,7 @@ public class PlayerHealth : Health
         }
     }
 
-    private void Die()
+    public void Die()
     {
         if (isDead) return;
         isDead = true;
@@ -70,5 +69,24 @@ public class PlayerHealth : Health
         if (TryGetComponent<Collider2D>(out var col)) col.enabled = false;
 
         Destroy(gameObject, 4f);
+
+
+
+    }
+    private void OnDisable()
+    {
+        Debug.LogWarning("PlayerHealth DISABLED -> " + gameObject.name, this);
+    }
+
+    public void Heal(float amount)
+    {
+        if (isDead) return;
+
+        m_currentHealth += amount;
+
+        m_currentHealth =
+            Mathf.Clamp(m_currentHealth, 0, m_maxHealth);
+
+        OnHealthIncreased?.Invoke(m_currentHealth);
     }
 }

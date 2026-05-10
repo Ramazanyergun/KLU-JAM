@@ -36,7 +36,7 @@ public class PlayerAnimation : MonoBehaviour
             m_combat.OnAttack += PlayAttackAnim;
             m_combat.OnDefenseStatusChanged += UpdateDefenseAnim;
             m_health.OnPlayerDeath += TriggerDeathAnimation;
-            m_health.OnHealthChanged += TriggerHurtAnimation;
+            m_health.OnHealthDecreased += TriggerHurtAnimation;
         }
     }
 
@@ -50,7 +50,7 @@ public class PlayerAnimation : MonoBehaviour
             m_combat.OnAttack -= PlayAttackAnim;
             m_combat.OnDefenseStatusChanged -= UpdateDefenseAnim;
             m_health.OnPlayerDeath -= TriggerDeathAnimation;
-            m_health.OnHealthChanged -= TriggerHurtAnimation;
+            m_health.OnHealthDecreased -= TriggerHurtAnimation;
         }
     }
 

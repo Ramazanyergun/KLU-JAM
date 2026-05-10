@@ -8,6 +8,8 @@ TagManager:
   - Goblin
   - Fare
   - Cadi
+  - TargetPoint
+  - PlayerHealthBar
   layers:
   - Default
   - TransparentFX

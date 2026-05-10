@@ -24,7 +24,7 @@ public class EnemyAnimation : MonoBehaviour
 
     void OnEnable()
     {
-        m_health.OnHealthChanged += TriggerTakeDamageAnimation;
+        m_health.OnHealthDecreased += TriggerTakeDamageAnimation;
         m_health.OnEnemyDeath += TriggerDeathAnimation;
         m_combat.OnAttack += TriggerAttackAnimation;
         m_movement.OnMoveStateChanged += UpdateMovementAnimation;
@@ -63,7 +63,7 @@ public class EnemyAnimation : MonoBehaviour
 
     void OnDisable()
     {
-        m_health.OnHealthChanged -= TriggerTakeDamageAnimation;
+        m_health.OnHealthDecreased -= TriggerTakeDamageAnimation;
         m_health.OnEnemyDeath -= TriggerDeathAnimation;
         m_combat.OnAttack -= TriggerAttackAnimation;
         m_movement.OnMoveStateChanged -= UpdateMovementAnimation;

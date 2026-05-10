@@ -161,6 +161,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb3bf23b7f1d62446b6b06e57d82c3bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
+  m_explosionPrefab: {fileID: 7878170736062694938, guid: 861fe07a99b596b4d844415848146285, type: 3}
 --- !u!58 &7382376280416907428
 CircleCollider2D:
   m_ObjectHideFlags: 0
