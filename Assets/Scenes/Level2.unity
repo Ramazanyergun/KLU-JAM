@@ -2161,6 +2161,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1953379464316580610, guid: ab799f09630c48a4c8cc9469538a70b7, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: 466724580049321693, guid: 329f12f67b47f654e82d3521cb26f225, type: 2}
+    - target: {fileID: 7581440961353824550, guid: ab799f09630c48a4c8cc9469538a70b7, type: 3}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: 7823998107338004470, guid: 329f12f67b47f654e82d3521cb26f225, type: 2}
     - target: {fileID: 8070434210214434796, guid: ab799f09630c48a4c8cc9469538a70b7, type: 3}
       propertyPath: m_Name
       value: SoundManager
