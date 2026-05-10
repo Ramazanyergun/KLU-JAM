@@ -67,6 +67,8 @@ public class PlayerHealth : Health
         // Karakteri yok etmeden önce collider'ı kapatmak iyi bir pratiktir
         // Böylece ölü karakterle etkileşim devam etmez
         if (TryGetComponent<Collider2D>(out var col)) col.enabled = false;
+        if (TryGetComponent<Rigidbody2D>(out var rb)) rb.gravityScale = 0;
+
 
         Destroy(gameObject, 4f);
 

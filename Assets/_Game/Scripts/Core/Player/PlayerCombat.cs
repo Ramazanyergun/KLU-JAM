@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerCombat : MonoBehaviour
@@ -15,7 +16,9 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Defense Settings")]
     [SerializeField] private float m_defenseCost = 15f;
+    [SerializeField] private float m_defenseBreakDuration = 3f;
 
+    private bool m_canUseDefense = true;
     private float m_nextAttackTime;
     private bool m_isCurrentlyDefending;
 
@@ -70,24 +73,41 @@ public class PlayerCombat : MonoBehaviour
 
     private void HandleDefense()
     {
-        bool isInputDefending = InputManager.Instance.isDefensing;
-        bool wasDefending = m_isCurrentlyDefending;
-        // Enerji varsa defend yap�labilir
-        if (isInputDefending && m_playerMovement.CurrentEnergy > 0)
+        if (!m_canUseDefense)
         {
+            m_isCurrentlyDefending = false;
+            OnDefenseStatusChanged?.Invoke(false);
+            return;
+        }
 
+        bool isInputDefending =
+            InputManager.Instance.isDefensing;
+
+        bool wasDefending = m_isCurrentlyDefending;
+
+        bool hasResource =
+            m_playerMovement.IsSwapActive
+            ? !m_playerMovement.IsDead()
+            : m_playerMovement.CurrentEnergy > 0;
+
+        if (isInputDefending && hasResource)
+        {
             bool canDefend =
-                m_playerMovement.ConsumeDefense(m_defenseCost * Time.deltaTime);
+                m_playerMovement.ConsumeDefense(
+                    m_defenseCost * Time.deltaTime);
 
             m_isCurrentlyDefending = canDefend;
-
 
             if (!wasDefending)
             {
                 soundManager.PlaySFX(soundManager.shield);
             }
-            // Enerji azalt
-            m_playerMovement.UseEnergy(m_defenseCost * Time.deltaTime);
+
+            // Resource bittiyse defense break
+            if (!canDefend)
+            {
+                StartCoroutine(DefenseBreakCoroutine());
+            }
         }
         else
         {
@@ -95,7 +115,23 @@ public class PlayerCombat : MonoBehaviour
         }
 
         OnDefenseStatusChanged?.Invoke(m_isCurrentlyDefending);
+    }
 
+    private IEnumerator DefenseBreakCoroutine()
+    {
+        m_canUseDefense = false;
+
+        m_isCurrentlyDefending = false;
+
+        OnDefenseStatusChanged?.Invoke(false);
+
+        Debug.Log("Defense Broken");
+
+        yield return new WaitForSeconds(m_defenseBreakDuration);
+
+        m_canUseDefense = true;
+
+        Debug.Log("Defense Restored");
     }
 
     private void OnDrawGizmosSelected()

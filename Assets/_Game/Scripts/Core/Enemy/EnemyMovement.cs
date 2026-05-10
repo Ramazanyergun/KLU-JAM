@@ -17,7 +17,7 @@ public class EnemyMovement : MonoBehaviour
     [Header("Patrol Settings")]
     [SerializeField] private Transform[] m_wayPoints;
     [SerializeField] private float m_waitAtWaypoint = 1.5f;
-
+    [SerializeField] private float m_loseRange = 10f;
     private Rigidbody2D m_rb;
     private Transform m_playerTransform;
     private int m_currentWaypointIndex;
@@ -50,10 +50,21 @@ public class EnemyMovement : MonoBehaviour
     {
         if (m_playerTransform == null) return;
 
-        float distanceToPlayer = Vector2.Distance(transform.position, m_playerTransform.position);
+        float distance =
+            Vector2.Distance(
+                transform.position,
+                m_playerTransform.position);
 
-        // Oyuncu menzile girerse kovalamaya başla
-        m_isChasing = distanceToPlayer <= m_detectionRange;
+        if (!m_isChasing)
+        {
+            if (distance <= m_detectionRange)
+                m_isChasing = true;
+        }
+        else
+        {
+            if (distance >= m_loseRange)
+                m_isChasing = false;
+        }
     }
 
     private void ChasePlayer()
@@ -79,22 +90,37 @@ public class EnemyMovement : MonoBehaviour
             return;
         }
 
-        Transform targetWaypoint = m_wayPoints[m_currentWaypointIndex];
-        float distanceToWaypoint = Vector2.Distance(transform.position, targetWaypoint.position);
+        Transform targetWaypoint =
+            m_wayPoints[m_currentWaypointIndex];
 
-        if (distanceToWaypoint > 0.2f)
+        float distanceToWaypoint =
+            Mathf.Abs(
+                transform.position.x -
+                targetWaypoint.position.x);
+
+        if (distanceToWaypoint > 0.1f)
         {
-            Vector2 direction = (targetWaypoint.position - transform.position).normalized;
+            Vector2 direction =
+                (targetWaypoint.position - transform.position)
+                .normalized;
+
             Move(direction, m_moveSpeed);
         }
         else
         {
             Stop();
+
             m_waitTimer += Time.fixedDeltaTime;
 
             if (m_waitTimer >= m_waitAtWaypoint)
             {
-                m_currentWaypointIndex = (m_currentWaypointIndex + 1) % m_wayPoints.Length;
+                m_currentWaypointIndex++;
+
+                if (m_currentWaypointIndex >= m_wayPoints.Length)
+                {
+                    m_currentWaypointIndex = 0;
+                }
+
                 m_waitTimer = 0;
             }
         }

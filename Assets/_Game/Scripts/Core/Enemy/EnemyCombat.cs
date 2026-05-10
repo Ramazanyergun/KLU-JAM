@@ -62,10 +62,8 @@ public class EnemyCombat : MonoBehaviour
                 SoundManager.Instance.PlaySFX(SoundManager.Instance.attack); // Goblin attack sesi
             else if (gameObject.CompareTag("Fare"))
                 SoundManager.Instance.PlaySFX(SoundManager.Instance.bocukattack); // Fare attack sesi
-        }
 
-        //if (isRanged)
-        //    ExecuteRangedAttack();
+        }
     }
 
     public void AnimationTriggerStep()

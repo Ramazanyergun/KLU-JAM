@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -31,7 +32,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool m_reverseControls;
     [SerializeField] private bool m_swapHealthAndEnergy;
     public bool IsSwapActive => m_swapHealthAndEnergy;
+    [Header("Glitch System")]
+    [SerializeField] private float m_glitchRollInterval = 5f;
+    [SerializeField] private float m_glitchChance = 0.3f;
+    [SerializeField] private float m_glitchDuration = 4f;
 
+    private float m_glitchTimer;
+
+    private Coroutine m_glitchRoutine;
     private Rigidbody2D m_playerRB;
     private PlayerHealth m_playerHealth;
     private Vector2 m_velocityReference = Vector2.zero;
@@ -53,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void HandleAllMovements()
     {
+        UpdateGlitchSystem();
         HandleEnergyRegen();
         HandleMovement();
         HandleJump();
@@ -103,6 +112,86 @@ public class PlayerMovement : MonoBehaviour
 
         if (horizontalInput > 0.1f) transform.localScale = new Vector3(1, 1, 1);
         else if (horizontalInput < -0.1f) transform.localScale = new Vector3(-1, 1, 1);
+    }
+    private void UpdateGlitchSystem()
+    {
+        m_glitchTimer += Time.deltaTime;
+
+        if (m_glitchTimer < m_glitchRollInterval)
+            return;
+
+        m_glitchTimer = 0f;
+
+        RollGlitch();
+    }
+
+    private void RollGlitch()
+    {
+        float roll = UnityEngine.Random.value;
+
+        if (roll > m_glitchChance)
+            return;
+
+        EffectTypes randomGlitch =
+            (EffectTypes)UnityEngine.Random.Range(
+                0,
+                System.Enum.GetValues(typeof(EffectTypes)).Length);
+
+        ApplyGlitch(randomGlitch, m_glitchDuration);
+    }
+
+
+
+    private void ApplyGlitch(EffectTypes randomGlitch, float duration)
+    {
+        // Eðer zaten aktif glitch varsa kapat
+        if (m_glitchRoutine != null)
+            StopCoroutine(m_glitchRoutine);
+
+        m_glitchRoutine = StartCoroutine(GlitchRoutine(randomGlitch, duration));
+    }
+
+    private IEnumerator GlitchRoutine(EffectTypes glitch, float duration)
+    {
+        // GLITCH AKTÝF
+        EnableGlitch(glitch);
+
+        yield return new WaitForSeconds(duration);
+
+        // GLITCH KAPAT
+        DisableGlitch(glitch);
+
+        m_glitchRoutine = null;
+    }
+
+    private void EnableGlitch(EffectTypes glitch)
+    {
+        switch (glitch)
+        {
+            case EffectTypes.ReverseControls:
+                m_reverseControls = true;
+                break;
+
+            case EffectTypes.SwapHealthAndEnergy:
+                m_swapHealthAndEnergy = true;
+                OnSwapChanged?.Invoke(true);
+                break;
+        }
+    }
+
+    private void DisableGlitch(EffectTypes glitch)
+    {
+        switch (glitch)
+        {
+            case EffectTypes.ReverseControls:
+                m_reverseControls = false;
+                break;
+
+            case EffectTypes.SwapHealthAndEnergy:
+                m_swapHealthAndEnergy = false;
+                OnSwapChanged?.Invoke(false);
+                break;
+        }
     }
 
     private void HandleJump()
@@ -214,16 +303,27 @@ public class PlayerMovement : MonoBehaviour
             m_playerHealth.TakeDamage(amount);
         }
     }
+
+
+
+
+
+
+
+
+
     public void CheckDeath()
     {
         if (m_swapHealthAndEnergy)
         {
-            if (m_playerHealth.CurrentHealth <= 0)
+
+            if (m_currentEnergyValue <= 0)
                 m_playerHealth.Die();
+
         }
         else
         {
-            if (m_currentEnergyValue <= 0)
+            if (m_playerHealth.CurrentHealth <= 0)
                 m_playerHealth.Die();
         }
     }
@@ -244,6 +344,8 @@ public class PlayerMovement : MonoBehaviour
     {
         m_reverseControls = value;
     }
+
+
 
 
 }

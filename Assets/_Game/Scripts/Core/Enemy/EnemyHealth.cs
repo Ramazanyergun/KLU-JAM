@@ -55,7 +55,6 @@ public class EnemyHealth : Health
         isDead = true;
         if (SoundManager.Instance != null)
             SoundManager.Instance.PlayDeathSound(gameObject.tag);
-        // Tüm sistemleri kapat
         EnemyMovement movement = GetComponent<EnemyMovement>();
         EnemyCombat combat = GetComponent<EnemyCombat>();
         Rigidbody2D rb = GetComponent<Rigidbody2D>();

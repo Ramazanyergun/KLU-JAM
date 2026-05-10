@@ -261,7 +261,6 @@ MonoBehaviour:
     m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   fill: {fileID: 8152707838970594779}
-  m_stateText: {fileID: 0}
   m_healthSystem: {fileID: 0}
 --- !u!1 &2625727387214663649
 GameObject:
@@ -593,7 +592,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 431043791cc30934e9c424c714efe583, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  m_maxHealth: 0
+  m_maxHealth: 300
   m_currentHealth: 0
   healthbar: {fileID: 2515295627652814528}
 --- !u!114 &12204800499414778
@@ -608,11 +607,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71f743430be769a41bbeb1d1d1ee90ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyCombat
-  m_isRanged: 0
-  m_damage: 0
-  m_attackCooldown: 0
+  m_isRanged: 1
+  m_damage: 50
+  m_attackCooldown: 1
   m_targetPoint: {fileID: 0}
-  m_attackRange: 0
+  m_attackRange: 7
   m_attackTransform: {fileID: 7380050342162014224}
   m_attackLayer:
     serializedVersion: 2
